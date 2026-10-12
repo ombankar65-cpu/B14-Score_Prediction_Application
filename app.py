@@ -66,11 +66,28 @@ with st.form("prediction_form"):
     submit_button = st.form_submit_button(label="Predict Score")
 
 if submit_button:
-    # Input DataFrame matching model's expected feature names[cite: 1]
+    # Encoding categorical inputs to match standard label encoding order.
+    # Adjust these mappings if your training label encoder used a different order.
+    gender_map = {"Male": 1, "Female": 0, "Other": 2}
+    internet_map = {"Yes": 1, "No": 0}
+    
+    course_map = {"Engineering": 0, "Science": 1, "Arts": 2, "Commerce": 3, "Business": 4}
+    sleep_quality_map = {"Poor": 0, "Fair": 1, "Good": 2, "Excellent": 3}
+    study_method_map = {"Self-Study": 0, "Online Videos": 1, "Group Study": 2, "Coaching": 3}
+    exam_difficulty_map = {"Easy": 0, "Medium": 1, "Hard": 2}
+
     input_data = pd.DataFrame([[
-        age, gender, course, study_hours, class_attendance, 
-        internet_access, sleep_hours, sleep_quality, study_method, 
-        facility_rating, exam_difficulty
+        age, 
+        gender_map.get(gender, 0), 
+        course_map.get(course, 0), 
+        study_hours, 
+        class_attendance, 
+        internet_map.get(internet_access, 0), 
+        sleep_hours, 
+        sleep_quality_map.get(sleep_quality, 0), 
+        study_method_map.get(study_method, 0), 
+        facility_rating, 
+        exam_difficulty_map.get(exam_difficulty, 0)
     ]], columns=[
         'age', 'gender', 'course', 'study_hours', 'class_attendance', 
         'internet_access', 'sleep_hours', 'sleep_quality', 'study_method', 
@@ -82,4 +99,3 @@ if submit_button:
         st.success(f"### Predicted Result: {prediction:.2f}")
     except Exception as e:
         st.error(f"Prediction Error: {e}")
-        st.info("Note: If your trained model pipeline expects encoded numerical values for categorical fields, ensure your preprocessing steps match those used during training.")
